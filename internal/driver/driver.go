@@ -18,7 +18,7 @@ type driver struct {
 }
 
 func NewDriver(config config.Config, logger *zap.Logger) (Driver, error) {
-	game, err := game.NewGame(config)
+	game, err := game.NewGame(config, logger)
 	if err != nil {
 		return nil, util.FowardingError("could not intialize game", err)
 	}

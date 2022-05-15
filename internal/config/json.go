@@ -26,6 +26,7 @@ func (c *jsonConfig) load(configSource *ConfigSource, logger *zap.Logger) error 
 
 	json.Unmarshal([]byte(byteValue), &c.data)
 
+	c.logger = logger
 	return nil
 }
 
@@ -35,8 +36,8 @@ func (c *jsonConfig) Get(target string) (string, error) {
 			return sval, nil
 		}
 
-		return "", util.BaseError("Failed to convert config var to string '%s'", target)
+		return "", util.BaseError(c.logger, "failed to convert config var to string '%s'", target)
 	}
 
-	return "", util.BaseError("Failed to find config var '%s'", target)
+	return "", util.BaseError(c.logger, "failed to find config var '%s'", target)
 }

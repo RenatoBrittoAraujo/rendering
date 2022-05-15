@@ -29,7 +29,7 @@ func LoadConfigFromSource(source *ConfigSource, logger *zap.Logger) (Config, err
 	case JSON:
 		config = &jsonConfig{}
 	default:
-		return nil, util.BaseError("failed to locate config source '%s'", string(source.SourceType))
+		return nil, util.BaseError(logger, "failed to locate config source '%s'", string(source.SourceType))
 	}
 
 	err := config.load(source, logger)

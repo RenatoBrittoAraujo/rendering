@@ -1,4 +1,5 @@
 {
+    "game": "tictactoe",
     "screenWidth": "100",
     "screenHeight": "100"
 }

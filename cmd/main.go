@@ -7,6 +7,8 @@ import (
 	"github.com/renatobrittoaraujo/rendering/internal/config"
 	"github.com/renatobrittoaraujo/rendering/internal/driver"
 	"github.com/renatobrittoaraujo/rendering/internal/logger"
+
+	"github.com/fatih/color"
 )
 
 func main() {
@@ -17,25 +19,29 @@ func main() {
 
 	logger, err := logger.CreateLogger()
 	if err != nil {
-		fmt.Println("failed to initialize logger:", err)
+		mainError("failed to initialize logger", err)
 		os.Exit(1)
 	}
 
 	config, err := config.LoadConfigFromSource(configSource, logger)
 	if err != nil {
-		fmt.Println("failed to initialize config:", err)
+		mainError("failed to initialize config", err)
 		os.Exit(1)
 	}
 
 	driver, err := driver.NewDriver(config, logger)
 	if err != nil {
-		fmt.Println("failed to initialize driver:", err)
-		os.Exit(1)
+		mainError("failed to initialize driver", err)
 	}
 
 	err = driver.Run()
 	if err != nil {
-		fmt.Println("failed to run driver:", err)
-		os.Exit(1)
+		mainError("failed to run driver", err)
 	}
+}
+
+func mainError(message string, err error) {
+	fmt.Printf("\n")
+	color.Red("[FATAL ERROR] %s; %s\n\n\n", message, fmt.Errorf("%w", err))
+	os.Exit(1)
 }
