@@ -2,42 +2,34 @@ package driver
 
 import (
 	"github.com/renatobrittoaraujo/rendering/internal/config"
-	"github.com/renatobrittoaraujo/rendering/internal/ebiten_helper"
 	"github.com/renatobrittoaraujo/rendering/internal/game"
+	"github.com/renatobrittoaraujo/rendering/internal/rendermaster"
+	"github.com/renatobrittoaraujo/rendering/internal/util"
+	"go.uber.org/zap"
 )
 
 type Driver interface {
-	Setup(config *config.Config) err
-	Run() err
+	Run() error
 }
 
 type driver struct {
-	renderMaster ebiten_helper.EbitenHelper
 	game         game.Game
+	rendermaster rendermaster.RenderMaster
 }
 
-func NewDriver() Driver {
-	newDriver := &driver{}
+func NewDriver(config config.Config, logger *zap.Logger) (Driver, error) {
+	game, err := game.NewGame(config)
+	if err != nil {
+		return nil, util.FowardingError("could not intialize game", err)
+	}
 
-	return newDriver
+	newDriver := &driver{
+		game: game,
+	}
+
+	return newDriver, nil
 }
 
-func (d *driver) HasFrame() {
-
-}
-
-func (d *driver) GetLastFrame() {
-
-}
-
-func (d *driver) GenerateFrame() {
-
-}
-
-func (d *driver) UpdateGame() {
-
-}
-
-func (d *driver) Start() {
-
+func (d *driver) Run() error {
+	return nil
 }

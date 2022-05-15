@@ -1,17 +1,17 @@
 package logger
 
 import (
-	"github.com/iammukeshm/structured-logging-golang-zap/utils"
+	"fmt"
+
 	"go.uber.org/zap"
 )
 
 func CreateLogger() (*zap.Logger, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w; failed to create zap logger", err)
 	}
 
-	utils.InitializeLogger()
-	utils.Logger.Info("Logger has been initialized.")
+	defer logger.Sync()
 	return logger, nil
 }
