@@ -35,7 +35,7 @@ func NewDriver(config config.Config, logger *zap.Logger) (Driver, error) {
 		return nil, util.FowardingError("could not intialize game", err)
 	}
 
-	rendermaster, err := rendermaster.NewRendermaster(config)
+	rendermaster, err := rendermaster.NewRendermaster(config, logger)
 	if err != nil {
 		return nil, util.FowardingError("could not intialize rendermaster", err)
 	}

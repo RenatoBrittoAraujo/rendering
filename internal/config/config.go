@@ -12,8 +12,9 @@ const (
 )
 
 type Config interface {
-	load(configSource *ConfigSource, logger *zap.Logger) error
 	Get(target string) (string, error)
+
+	load(configSource *ConfigSource, logger *zap.Logger) error
 }
 
 type ConfigSource struct {

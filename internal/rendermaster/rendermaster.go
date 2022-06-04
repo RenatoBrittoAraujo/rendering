@@ -3,6 +3,7 @@ package rendermaster
 import (
 	"github.com/renatobrittoaraujo/rendering/internal/config"
 	"github.com/renatobrittoaraujo/rendering/internal/rendermaster/pixel_rendermaster"
+	"go.uber.org/zap"
 )
 
 // Is the owner of main thread.
@@ -22,6 +23,6 @@ type Rendermaster interface {
 	// draw them somewhere
 }
 
-func NewRendermaster(cfg config.Config) (Rendermaster, error) {
-	return pixel_rendermaster.NewRenderMaster(cfg), nil
+func NewRendermaster(cfg config.Config, logger *zap.Logger) (Rendermaster, error) {
+	return pixel_rendermaster.NewRenderMaster(cfg, logger), nil
 }
