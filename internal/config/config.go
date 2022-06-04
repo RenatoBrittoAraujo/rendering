@@ -26,7 +26,7 @@ func LoadConfigFromSource(source *ConfigSource, logger *zap.Logger) (Config, err
 	var config Config
 
 	switch source.SourceType {
-	case JSON:
+	case "json":
 		config = &jsonConfig{}
 	default:
 		return nil, util.BaseError(logger, "failed to locate config source '%s'", string(source.SourceType))

@@ -1,12 +1,27 @@
 package rendermaster
 
-import "github.com/renatobrittoaraujo/rendering/internal/config"
+import (
+	"github.com/renatobrittoaraujo/rendering/internal/config"
+	"github.com/renatobrittoaraujo/rendering/internal/rendermaster/pixel_rendermaster"
+)
 
-type RenderMaster interface {
+// Is the owner of main thread.
+type Rendermaster interface {
+	// init
+	Run() error
+
+	// input
+	// keys pressed
+	// mouse pressed
+	// game close call
+
+	// output
+	// LoadImage(path string)
+	// MakeSprite([]Image) (Sprite, error)
+
+	// draw them somewhere
 }
 
-type pixel struct{}
-
-func NewRenderMaster(config *config.Config) RenderMaster {
-	return &pixel{}
+func NewRendermaster(cfg config.Config) (Rendermaster, error) {
+	return pixel_rendermaster.NewRenderMaster(cfg), nil
 }
