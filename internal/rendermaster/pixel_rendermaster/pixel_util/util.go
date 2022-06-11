@@ -1,4 +1,4 @@
-package pixel_rendermaster
+package pixel_util
 
 import (
 	"image"
