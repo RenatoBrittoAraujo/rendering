@@ -3,17 +3,18 @@ package pixel_rendermaster
 import (
 	"fmt"
 	_ "image/png"
+	"math"
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/renatobrittoaraujo/rendering/internal/config"
-	"github.com/renatobrittoaraujo/rendering/internal/rendermaster/pixel_rendermaster/pixel_util"
+	"github.com/renatobrittoaraujo/rendering/internal/rendermaster/pixel_rendermaster/pixel_core"
 	"github.com/renatobrittoaraujo/rendering/internal/shared"
 	"go.uber.org/zap"
 	"golang.org/x/image/colornames"
 )
 
 const (
-	PATH_BOARD  = "internal/assets/tictactoe_background.png"
+	PATH_BOARD  = "internal/assets/black_square.png"
 	PATH_CROSS  = "internal/assets/cross.png"
 	PATH_CIRCLE = "internal/assets/circle.png"
 	PATH_BUTTON = "internal/assets/button.png"
@@ -24,7 +25,7 @@ type PixelRM struct {
 	game   *game
 	logger *zap.Logger
 
-	pixelUtil *pixel_util.PixelUtil
+	pixelCore *pixel_core.PixelCore
 
 	board  shared.Object
 	button shared.Object
@@ -62,7 +63,7 @@ func (p *PixelRM) Run() error {
 			return
 		}
 
-		err = p.pixelUtil.MainLoop()
+		err = p.pixelCore.MainLoop()
 		if err != nil {
 			return
 		}
@@ -75,11 +76,11 @@ func (p *PixelRM) Run() error {
 }
 
 func (p *PixelRM) config() error {
-	pixelUtil, err := pixel_util.NewPixelUtil(p.cfg, p.logger, p)
+	pixelCore, err := pixel_core.NewPixelCore(p.cfg, p.logger, p)
 	if err != nil {
 		return err
 	}
-	p.pixelUtil = pixelUtil
+	p.pixelCore = pixelCore
 
 	return nil
 }
@@ -92,12 +93,12 @@ func (p *PixelRM) load() error {
 		},
 		Pos: shared.Rect{
 			Min: shared.Point{
-				X: p.pixelUtil.GetCenterX(),
-				Y: p.pixelUtil.GetCenterY(),
+				X: p.pixelCore.GetMinX(),
+				Y: p.pixelCore.GetMinY(),
 			},
 			Max: shared.Point{
-				X: p.pixelUtil.GetCenterX() + 600,
-				Y: p.pixelUtil.GetCenterY() + 300,
+				X: p.pixelCore.GetMaxX(),
+				Y: p.pixelCore.GetMaxY(),
 			},
 		},
 	}
@@ -109,12 +110,12 @@ func (p *PixelRM) load() error {
 		},
 		Pos: shared.Rect{
 			Min: shared.Point{
-				X: p.pixelUtil.Win.Bounds().Center().X - 300,
-				Y: p.pixelUtil.Win.Bounds().Center().Y + 350,
+				X: p.pixelCore.GetCenterX() - 300,
+				Y: p.pixelCore.GetCenterY() + 350,
 			},
 			Max: shared.Point{
-				X: p.pixelUtil.Win.Bounds().Center().X + 300,
-				Y: p.pixelUtil.Win.Bounds().Center().Y + 400,
+				X: p.pixelCore.GetCenterX() + 300,
+				Y: p.pixelCore.GetCenterY() + 400,
 			},
 		},
 	}
@@ -135,7 +136,7 @@ func (p *PixelRM) load() error {
 		p.button.Image,
 	}
 
-	err := p.pixelUtil.LoadImages(images)
+	err := p.pixelCore.LoadImages(images)
 	if err != nil {
 		return err
 	}
@@ -146,10 +147,10 @@ func (p *PixelRM) load() error {
 func (p *PixelRM) Draw() error {
 
 	// paint screen white
-	p.pixelUtil.Win.Clear(colornames.White)
+	p.pixelCore.Win.Clear(colornames.White)
 
 	// Draw board in center
-	err := p.pixelUtil.DrawSpriteRect(&p.board)
+	err := p.pixelCore.DrawSpriteRect(&p.board)
 	if err != nil {
 		return err
 	}
@@ -172,7 +173,7 @@ func (p *PixelRM) Draw() error {
 	// 		var x float64 = float64((i % 3) * 100)
 	// 		var y float64 = float64((i / 3) * 100)
 
-	// 		err := p.pixelUtil.DrawSpriteRect(img, pixel.IM.Moved(pixel.Vec{X: x, Y: y}))
+	// 		err := p.pixelCore.DrawSpriteRect(img, pixel.IM.Moved(pixel.Vec{X: x, Y: y}))
 	// 		if err != nil {
 	// 			return err
 	// 		}
@@ -199,6 +200,8 @@ func (p *PixelRM) Draw() error {
 	return nil
 }
 
+var i float64
+
 func (p *PixelRM) Update() error {
 	// get input
 
@@ -207,6 +210,12 @@ func (p *PixelRM) Update() error {
 	// check winning conditions
 
 	// if end, prompt restart and display button
+
+	/// ========== tests
+
+	i++
+	p.board.Pos.Min.X = p.pixelCore.GetMinX() + math.Abs(math.Sin(i/50))*100
+	p.board.Pos.Min.Y = p.pixelCore.GetMinY() + math.Abs(math.Sin(i/50))*100
 
 	return nil
 }

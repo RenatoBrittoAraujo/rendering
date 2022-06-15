@@ -1,4 +1,4 @@
-package pixel_util
+package pixel_core
 
 import "github.com/faiface/pixel"
 

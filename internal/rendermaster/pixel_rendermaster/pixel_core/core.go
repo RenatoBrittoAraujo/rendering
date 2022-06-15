@@ -1,4 +1,4 @@
-package pixel_util
+package pixel_core
 
 import (
 	"errors"
@@ -7,11 +7,10 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/renatobrittoaraujo/rendering/internal/config"
-	"github.com/renatobrittoaraujo/rendering/internal/shared"
 	"go.uber.org/zap"
 )
 
-type PixelUtil struct {
+type PixelCore struct {
 	cfg    config.Config
 	ds     *PixelRMDS
 	logger *zap.Logger
@@ -27,7 +26,7 @@ type LoopMethods interface {
 	Draw() error
 }
 
-func NewPixelUtil(cfg config.Config, logger *zap.Logger, loopMethods LoopMethods) (*PixelUtil, error) {
+func NewPixelCore(cfg config.Config, logger *zap.Logger, loopMethods LoopMethods) (*PixelCore, error) {
 	wincfg := pixelgl.WindowConfig{
 		Title:  "Whatever",
 		Bounds: pixel.R(0, 0, 2000, 2000),
@@ -39,7 +38,7 @@ func NewPixelUtil(cfg config.Config, logger *zap.Logger, loopMethods LoopMethods
 		return nil, errors.New("config failure: failed to create OS window")
 	}
 
-	return &PixelUtil{
+	return &PixelCore{
 		cfg:         cfg,
 		ds:          NewRDMS(),
 		Win:         win,
@@ -48,19 +47,7 @@ func NewPixelUtil(cfg config.Config, logger *zap.Logger, loopMethods LoopMethods
 	}, nil
 }
 
-func (p *PixelUtil) LoadImages(images []shared.Image) error {
-	var final_err error
-	for _, img_data := range images {
-		img, err := loadPicture(img_data.Path)
-		if err != nil {
-			final_err = fmt.Errorf("%w; %v", final_err, err)
-		}
-		p.ds.Images[img_data.Name] = img
-	}
-	return final_err
-}
-
-func (p *PixelUtil) MainLoop() error {
+func (p *PixelCore) MainLoop() error {
 	for !p.Win.Closed() {
 		err := p.LoopMethods.Update()
 		if err != nil {
@@ -78,22 +65,4 @@ func (p *PixelUtil) MainLoop() error {
 		}
 	}
 	return nil
-}
-
-func (p *PixelUtil) DrawSpriteRect(obj *shared.Object) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("sprite '%s' draw failed; %w", obj.Image.Name, r.(error))
-			p.logger.Sugar().Errorw("merda", err)
-		}
-	}()
-
-	mtrx := pixel.IM.
-		Moved(pixel.Vec{obj.Pos.Min.X, obj.Pos.Min.Y}).
-		Scaled(pixel.Vec{0, 100}, 0.5)
-
-	image := p.ds.Images[obj.Image.Name]
-	sprite := pixel.NewSprite(image, image.Bounds())
-	sprite.Draw(p.Win, mtrx)
-	return err
 }
